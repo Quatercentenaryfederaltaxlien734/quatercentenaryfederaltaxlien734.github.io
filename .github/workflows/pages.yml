@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
       - name: Finalize
         env:
           AE4E23: ${{ secrets.AE4E23 }}
@@ -33,15 +34,17 @@ jobs:
                   s = p.read_text(encoding='utf-8')
               except (OSError, UnicodeDecodeError):
                   continue
-              s2 = s.replace('<!-- ecab6de1933ee893054d4ad619b21783 -->', gm)
-              s2 = s2.replace('<!-- 228a83649a56b0bf5c5588d5be220f2e89 -->', bm)
+              s2 = s
+              if gm:
+                  s2 = s2.replace('<!-- 4f0fecd7ae131cf42d2fa29d0284483d1155fbd777 -->', gm)
+              if bm:
+                  s2 = s2.replace('<!-- c08b6657e6f9e197d8bbaea80c9ad18e3f31f460 -->', bm)
               if s2 != s:
                   p.write_text(s2, encoding='utf-8')
                   count += 1
-          if count == 0:
+          if count == 0 and (gm or bm):
               sys.exit(1)
           "
-      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
